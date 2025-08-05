@@ -4,9 +4,10 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 char buffer[256];
-char recv_buffer[6000];
+char recv_buffer[4096];
 
 #define TARGET_WEBSITE "www.example.com"
 
@@ -48,9 +49,12 @@ Host: www.example.com\n\r\n");
 		perror("client write error: ");
 		return 4;
 	}
+	
+	shutdown(sockfd, SHUT_WR);
 
 	printf("RECEIVING...\n");
-	ssize_t nrecv_buffer = recv(sockfd, recv_buffer, sizeof(recv_buffer), 0);
+	ssize_t nrecv_buffer = 0;
+	nrecv_buffer = recv(sockfd, recv_buffer, sizeof(recv_buffer), MSG_WAITALL);
 	if (nrecv_buffer < 0) {
 		perror("client receive error: ");
 		return 5;
