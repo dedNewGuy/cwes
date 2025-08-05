@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -xe
+gcc -ggdb -Wall -Wextra -o simp_client ./simple_netcomm/client.c
+# gcc -ggdb -Wall -Wextra -o simp_server ./simple_netcomm/server.c
