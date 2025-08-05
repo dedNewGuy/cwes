@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+set -xe
+gcc -ggdb -Wall -Wextra -o showip showip.c
