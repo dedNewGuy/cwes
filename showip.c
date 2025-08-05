@@ -2,6 +2,8 @@
 * showip.c
 *
 * simple program to show the ip address of the website
+*
+* This program is guided by https://beej.us/guide/bgnet/html/split/system-calls-or-bust.html#cb21-1
 */
 
 #include <stdio.h>
