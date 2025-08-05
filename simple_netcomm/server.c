@@ -79,6 +79,11 @@ int main(void)
 
 	printf("Message from client: %s\n", recv_buffer);
 
+	freeaddrinfo(serv_info);
+	close(sockfd);
+	close(client_sock);
+	return exit_code;
+
 cleanup:
 	freeaddrinfo(serv_info);
 	if (sockfd != -1) {
