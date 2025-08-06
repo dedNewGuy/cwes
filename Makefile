@@ -18,7 +18,7 @@ http_client: ./http/http_client.c
 	$(CC) $(CFLAGS) -o http_client ./http/http_client.c
 
 
-http_server: ./http/http_server.c
-	$(CC) $(CFLAGS) -o http_server ./http/http_server.c
+http_server: ./http/http_server.c ./http/httplib.c
+	$(CC) $(CFLAGS) -o http_server ./http/http_server.c ./http/httplib.c
 
 .PHONY: all

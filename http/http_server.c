@@ -5,6 +5,8 @@
 #include <netdb.h>
 #include <unistd.h>
 
+#include "httplib.h"
+
 #define PORT "8080"
 #define BACKLOG 10
 
@@ -37,35 +39,45 @@ int main(int argc, char **argv)
 
 	int sockfd = socket(serv_info->ai_family, serv_info->ai_socktype, serv_info->ai_protocol);
 	if (sockfd < 0) {
-		perror("Socket: ");
+		perror("Socket:");
+		goto defer;
+	}
+
+	int yes = 1;
+
+	int sockopt_status = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes);
+	if (sockopt_status < 0) {
+		perror("Socket option error");
 		goto defer;
 	}
 
 	int bind_status = bind(sockfd, serv_info->ai_addr, serv_info->ai_addrlen);
 	if (bind_status < 0) {
-		perror("Bind error: ");
+		perror("Bind error");
 		goto defer;
 	}
 
 	int listen_status = listen(sockfd, BACKLOG);
 	if (listen_status < 0) {
-		perror("Listening error: ");
+		perror("Listening error");
 		goto defer;
 	}
 
 	int client_sockfd = accept(sockfd, NULL, NULL);
 	if (client_sockfd < 0) {
-		perror("Accept error: ");
+		perror("Accept error");
 		goto defer;
 	}
 
-	ssize_t n_buffer = recv(client_sockfd, req_buffer, sizeof req_buffer, MSG_WAITALL);
+	ssize_t n_buffer = recv(client_sockfd, req_buffer, sizeof req_buffer, 0);
 	if (n_buffer < 0) {
-		perror("Receiving request error: ");
+		perror("Receiving request error");
 		goto defer;
 	}
 
-	printf("%s\n", req_buffer);
+	struct http_request_t req = parse_http_request(req_buffer, client_sockfd);
+
+	send_http_response(dir_name, req);
 
 	freeaddrinfo(serv_info);
 	close(sockfd);
